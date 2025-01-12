@@ -1,0 +1,29 @@
+#!/bin/sh
+set -e
+xhost +
+GPU_SHARE=""
+nvidia-smi > /dev/null 2>&1 || GPU_SHARE="--device nvidia.com/gpu=all"
+docker run \
+    -idt \
+    --rm \
+    --name musescore4_jack \
+    -u 1000:1000 \
+    --network=none \
+    --ipc=host \
+    --cap-add=sys_nice \
+    --ulimit rtprio=99  \
+    --group-add $(awk -F: '/audio/ {print $3}' /etc/group) \
+    --device /dev/snd \
+    $GPU_SHARE \
+    -e PULSE_SERVER=unix:/tmp/pulse/native \
+    -e DISPLAY=$DISPLAY \
+    -e HOME=/home/user \
+    -e XDG_RUNTIME_DIR=/tmp \
+    -v /tmp/.X11-unix:/tmp/.X11-unix:rw \
+    -v /etc/passwd:/etc/passwd:ro \
+    -v /etc/group:/etc/group:ro \
+    -v $(pwd):/data \
+    -v $XDG_RUNTIME_DIR/pipewire-0:/tmp/pipewire-0 \
+    -v $XDG_RUNTIME_DIR/pulse:/tmp/pulse \
+    -w /app \
+    musescore4_jack:latest
