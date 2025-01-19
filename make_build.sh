@@ -47,7 +47,7 @@ git clone --depth=1 https://github.com/musescore/MuseScore.git MuseScore
 cd MuseScore
 git fetch origin pull/19246/head:jack-support
 #git checkout jack-support  # uncomment to use latest commit of the pull request
-git checkout d83f86ec095ae24f285108f6528d44ec9016c3de 
+git checkout fa5ea00016337b4dcb05f901e0ce4613cb91b2c5
 mkdir build
 cd build
 cmake ..
