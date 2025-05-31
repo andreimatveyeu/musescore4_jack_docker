@@ -26,4 +26,6 @@ jobs:
       with:
         context: .
         push: true
-        tags: ghcr.io/andreimatveyeu/musescore4_jack:latest
+        tags: |
+          ghcr.io/andreimatveyeu/musescore4_jack:latest
+          ghcr.io/andreimatveyeu/musescore4_jack:${{ github.sha.substring(0, 7) }}
