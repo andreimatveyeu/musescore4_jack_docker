@@ -21,11 +21,15 @@ jobs:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
 
+    - name: Get short SHA
+      id: sha
+      run: echo "sha=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+
     - name: Build and push Docker image
       uses: docker/build-push-action@v5
       with:
         context: .
         push: true
         tags: |
+          ghcr.io/andreimatveyeu/musescore4_jack:${{ steps.sha.outputs.sha }}
           ghcr.io/andreimatveyeu/musescore4_jack:latest
-          ghcr.io/andreimatveyeu/musescore4_jack:${{ slice(github.sha, 0, 7) }}
