@@ -4,7 +4,7 @@ which docker
 docker build \
     --progress=plain \
     --network=host \
-    -t musescore4_jack:latest \
+    -t ghcr.io/andreimatveyeu/musescore4_jack:latest \
     --build-arg GIT_COMMIT=$(git rev-parse --short HEAD) \
     -f Dockerfile \
     .
