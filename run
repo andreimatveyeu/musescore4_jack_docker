@@ -17,13 +17,14 @@ docker run \
     $GPU_SHARE \
     -e PULSE_SERVER=unix:/tmp/pulse/native \
     -e DISPLAY=$DISPLAY \
-    -e HOME=/home/user \
+    -e HOME \
     -e XDG_RUNTIME_DIR=/tmp \
     -v /tmp/.X11-unix:/tmp/.X11-unix:rw \
     -v /etc/passwd:/etc/passwd:ro \
     -v /etc/group:/etc/group:ro \
+    -v $HOME/.config/MuseScore:$HOME/.config/MuseScore \
     -v $(pwd):/data \
     -v $XDG_RUNTIME_DIR/pipewire-0:/tmp/pipewire-0 \
     -v $XDG_RUNTIME_DIR/pulse:/tmp/pulse \
     -w /app \
-    ghcr.io/andreimatveyeu/musescore4_jack:latest
+    ghcr.io/andreimatveyeu/musescore4_jack:5ce1998
