@@ -42,8 +42,9 @@ locale-gen
 pip install --break-system-packages aqtinstall==3.1.21
 aqt install-qt linux desktop 6.2.4 gcc_64 --outputdir /opt/qt --modules qtnetworkauth qtscxml qt5compat qtmultimedia qtwebview qtwebengine
 
-MUSESCORE_COMMIT=fa5ea00016337b4dcb05f901e0ce4613cb91b2c5
-# This is the specific commit from PR #19246 that was tested. PR: https://github.com/musescore/MuseScore/pull/19246/
+MUSESCORE_COMMIT=9773fcf84ee09d58cd491b56585b7bc4fa94b1d0
+# This is the specific commit from PR #19246 mentioned in this video: https://www.youtube.com/watch?v=kSvwFtiHNkA
+# PR: https://github.com/musescore/MuseScore/pull/19246/
 git clone https://github.com/andreimatveyeu/MuseScore4.git MuseScore
 cd MuseScore
 git fetch origin $MUSESCORE_COMMIT

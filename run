@@ -27,4 +27,4 @@ docker run \
     -v $XDG_RUNTIME_DIR/pipewire-0:/tmp/pipewire-0 \
     -v $XDG_RUNTIME_DIR/pulse:/tmp/pulse \
     -w /app \
-    ghcr.io/andreimatveyeu/musescore4_jack:5ce1998
+    ghcr.io/andreimatveyeu/musescore4_jack:latest
