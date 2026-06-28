@@ -1,5 +1,31 @@
 #!/bin/sh
 set -e
+
+IMAGE_REPO=ghcr.io/andreimatveyeu/musescore4_jack
+
+# By default run the image for this repo's latest git tag (the released version).
+# Pass --latest to use the ':latest' tag instead (e.g. a locally built image).
+USE_LATEST=""
+for arg in "$@"; do
+    case "$arg" in
+        --latest) USE_LATEST=1 ;;
+        *) echo "run: unknown argument '$arg' (supported: --latest)" >&2; exit 2 ;;
+    esac
+done
+
+if [ -n "$USE_LATEST" ]; then
+    TAG=latest
+else
+    SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
+    TAG=$(git -C "$SCRIPT_DIR" describe --tags --abbrev=0 2>/dev/null || true)
+    if [ -z "$TAG" ]; then
+        echo "run: no git tag found in $SCRIPT_DIR, falling back to ':latest'" >&2
+        TAG=latest
+    fi
+fi
+IMAGE="$IMAGE_REPO:$TAG"
+echo "run: using image $IMAGE" >&2
+
 xhost +
 GPU_SHARE=""
 nvidia-smi > /dev/null 2>&1 || GPU_SHARE="--device nvidia.com/gpu=all"
@@ -27,4 +53,4 @@ docker run \
     -v $XDG_RUNTIME_DIR/pipewire-0:/tmp/pipewire-0 \
     -v $XDG_RUNTIME_DIR/pulse:/tmp/pulse \
     -w /app \
-    ghcr.io/andreimatveyeu/musescore4_jack:latest
+    "$IMAGE"

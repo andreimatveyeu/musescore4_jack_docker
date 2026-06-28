@@ -1,15 +1,16 @@
-name: Docker Image CI
+name: Release
 
 on:
   push:
-    branches: [ "main" ]
+    tags:
+      - '*.*.*'   # semver tags, e.g. 1.0.2 (matches the repo's existing convention)
 
 jobs:
-  build_and_publish:
+  build_and_release:
     runs-on: ubuntu-latest
     permissions:
-      contents: read
-      packages: write
+      contents: write   # create the GitHub release
+      packages: write    # push to ghcr.io
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
@@ -21,15 +22,18 @@ jobs:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Get short SHA
-      id: sha
-      run: echo "sha=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
-
     - name: Build and push Docker image
       uses: docker/build-push-action@v5
       with:
         context: .
         push: true
+        build-args: |
+          GIT_COMMIT=${{ github.sha }}
         tags: |
-          ghcr.io/andreimatveyeu/musescore4_jack:${{ steps.sha.outputs.sha }}
+          ghcr.io/andreimatveyeu/musescore4_jack:${{ github.ref_name }}
           ghcr.io/andreimatveyeu/musescore4_jack:latest
+
+    - name: Create GitHub release
+      uses: softprops/action-gh-release@v2
+      with:
+        generate_release_notes: true
