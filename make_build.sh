@@ -1,18 +1,23 @@
 #!/bin/bash
+# Builder stage only: install build deps, build Qt + MuseScore, install to /usr/local.
+# No cleanup/useradd/locale-gen here -- this stage is discarded; the runtime stage
+# (see Dockerfile) installs only runtime libs and copies the built artifacts out.
 set -e
 export DEBIAN_FRONTEND=noninteractive
+
+# Pin apt to a fixed Debian snapshot (shared with the runtime stage).
+./setup-apt-snapshot.sh
 
 apt-get update
 apt-get install -y --no-install-recommends \
     git \
     build-essential \
     cmake \
-    locales \
+    pkg-config \
     python3 \
     python3-pip \
-    pipewire \
-    pulseaudio-utils \
-    pipewire-jack \
+    libglib2.0-0t64 \
+    libdbus-1-3 `# Qt6DBus links libdbus-1.so.3 at build time; no -dev package pulls it in` \
     libfontconfig1 \
     libfreetype6 \
     libopengl0 \
@@ -33,13 +38,7 @@ apt-get install -y --no-install-recommends \
     libxcb-shape0 \
     zlib1g-dev
 
-apt-get clean
-rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/*
-
-sed -i '/en_US.UTF-8/s/^# //g' /etc/locale.gen
-locale-gen
-
-pip install --break-system-packages aqtinstall==3.1.21
+pip install --break-system-packages -r requirements.txt
 aqt install-qt linux desktop 6.2.4 gcc_64 --outputdir /opt/qt --modules qtnetworkauth qtscxml qt5compat qtmultimedia qtwebview qtwebengine
 
 MUSESCORE_COMMIT=9773fcf84ee09d58cd491b56585b7bc4fa94b1d0
@@ -54,13 +53,3 @@ cd build
 cmake ..
 make -j$(nproc)
 make install
-
-# cleanup
-apt-get remove -y --purge git build-essential cmake python3-pip python3
-cd /app
-rm -rf MuseScore
-rm -rf /root/.cache
-rm -rf /usr/local/lib/python*
-
-# add user to run as non-root
-useradd -G audio user

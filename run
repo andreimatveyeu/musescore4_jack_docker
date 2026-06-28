@@ -4,7 +4,7 @@ xhost +
 GPU_SHARE=""
 nvidia-smi > /dev/null 2>&1 || GPU_SHARE="--device nvidia.com/gpu=all"
 docker run \
-    -idt \
+    -it \
     --rm \
     --name musescore4_jack \
     -u 1000:1000 \
